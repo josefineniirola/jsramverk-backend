@@ -1,4 +1,5 @@
 const database = require("../db/database.js");
+const ObjectId = require('mongodb').ObjectId;
 
 
 const editorModel  = {
@@ -26,8 +27,8 @@ const editorModel  = {
 
         try {
             db = await database.getDb();
-
             const result = await db.collection.insertOne(newEdit);
+            console.log(result);
             return {
                 ...newEdit,
                 _id: result.insertedId,
@@ -39,45 +40,39 @@ const editorModel  = {
         }
     },
     editEdits: async function editEdits(updateEdit) {
+        const filter = { _id: ObjectId(updateEdit._id) };
+
         let db;
         try {
             db = await database.getDb();
-            console.log("updaete", updateEdit)
-            const result = await db.collection.updateOne({
-                id: updateEdit.id
-            }, {
-                $set: {
-                    "id": updateEdit.id,
-                    "name": updateEdit.name,
-                    "text": updateEdit.text
-                }
-            });
-            console.log("result: ", result)
-            return result;
-
+            await db.collection.updateOne(
+                filter, 
+                {
+                    $set: {
+                        name: updateEdit.name,
+                        text: updateEdit.text
+                    },
+                },
+                { upsert: false });
         } catch (error) {
             console.error(error.message);
         } finally {
             await db.client.close();
         }
     },
-    deleteEdit: async function deleteEdit(deletedId) {
-        let db;
-        try {
-            db = await database.getDb();
-            console.log("updaete", deletedId)
-            const result = await db.collection.deleteOne({
-                id: deletedId.id
-            });
-            console.log("result: ", result)
-            return result;
-
-        } catch (error) {
-            console.error(error.message);
-        } finally {
-            await db.client.close();
-        }
-    },
+    // deleteEdit: async function deleteEdit(deletedId) {
+    //     let filter = { _id: ObjectId(deletedId._id) };
+    //     let db;
+    //     try {
+    //         db = await database.getDb();
+    //         console.log("updaete", deletedId)
+    //         await db.collection.deleteOne(filter);
+    //     } catch (error) {
+    //         console.error(error.message);
+    //     } finally {
+    //         await db.client.close();
+    //     }
+    // },
     init: async function init() {
         let db;
         try {
