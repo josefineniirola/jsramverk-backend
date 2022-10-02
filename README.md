@@ -21,7 +21,7 @@ Open [http://localhost:1337](http://localhost:1337) if you want to view backend.
 Open [http://localhost:3000](http://localhost:3000) if you want to view frontend
 
 ## API
-**POST**, **PUT**, **DELETE**, **GET**
+**POST**, **PUT**, **GET**
 ```bash
  /editor
 ```
