@@ -19,10 +19,14 @@ router.get('/',
 router.post("/",
     async (req, res) => {
         const newEditor = req.body;
-
-        const result = await editorModel.insertEdit(newEditor);
-
-        return res.status(201).json({ data: result});
+        if (newEditor.name && newEditor.text) {
+            const result = await editorModel.insertEdit(newEditor);
+            return res.status(201).json({ data: result});
+        } else {
+            return res.status(400).json({ errors: {
+                message: "Name and text needed to create edit"
+            }});
+        }
     }
 );
 
@@ -42,7 +46,9 @@ router.put("/",
                 });
             return res.status(201).json({ data: result, msg: "got a put request "});
         } catch (error) {
-            console.error(error.message);
+            return res.status(400).json({ errors: {
+                message: "Failed to edit"
+            }});
         } finally {
             await db.client.close();
         }
